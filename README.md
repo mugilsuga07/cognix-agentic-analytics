@@ -105,4 +105,3 @@ COGNIX_V2/
 - "Profit by sub-category"
 - "Quarterly sales by category"
 
-

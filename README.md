@@ -105,12 +105,4 @@ COGNIX_V2/
 - "Profit by sub-category"
 - "Quarterly sales by category"
 
-## Configuration
 
-Environment variables (`.env` file):
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `OPENAI_API_KEY` | Your OpenAI API key | Required |
-| `OPENAI_MODEL` | Model to use | gpt-4o-mini |
-| `DEBUG` | Debug mode | false |

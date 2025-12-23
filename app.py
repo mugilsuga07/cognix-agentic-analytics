@@ -10,16 +10,23 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from typing import Optional
-import openai
 
 from workflow import run_analytics
 from config import settings
 
-# Configure OpenAI API key (supports both local .env and Streamlit Cloud secrets)
-try:
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
-except Exception:
-    openai.api_key = os.getenv("OPENAI_API_KEY")
+# Configure OpenAI API key (works for BOTH local + Streamlit Cloud)
+OPENAI_API_KEY = (
+    st.secrets["OPENAI_API_KEY"]
+    if "OPENAI_API_KEY" in st.secrets
+    else os.getenv("OPENAI_API_KEY")
+)
+
+if not OPENAI_API_KEY:
+    st.error("OpenAI API key not configured. Please add OPENAI_API_KEY to Streamlit secrets or .env file.")
+    st.stop()
+
+# Set the key for OpenAI client
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 # Page configuration
 st.set_page_config(
@@ -203,11 +210,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
-# Check if OpenAI API key is configured
-if not openai.api_key:
-    st.error("OpenAI API key not configured. Please add OPENAI_API_KEY to Streamlit secrets or .env file.")
-    st.stop()
 
 
 def execute_query(question: str) -> Optional[dict]:

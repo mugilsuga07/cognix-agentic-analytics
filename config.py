@@ -1,6 +1,7 @@
 """
 Configuration management for Cognix V2.
 Loads environment variables and provides typed configuration.
+Supports both local .env files and Streamlit Cloud secrets.
 """
 
 import os
@@ -12,12 +13,25 @@ from pydantic import BaseModel
 load_dotenv()
 
 
+def get_secret(key: str, default: str = "") -> str:
+    """Get secret from Streamlit Cloud or environment variable."""
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets') and key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        pass
+    # Fall back to environment variable
+    return os.getenv(key, default)
+
+
 class Settings(BaseModel):
     """Application settings with validation."""
     
     # OpenAI
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    openai_api_key: str = get_secret("OPENAI_API_KEY", "")
+    openai_model: str = get_secret("OPENAI_MODEL", "gpt-4o-mini")
     
     # Server
     host: str = os.getenv("HOST", "0.0.0.0")
